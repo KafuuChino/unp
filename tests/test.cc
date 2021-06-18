@@ -3,8 +3,15 @@
 //
 
 #include <iostream>
+#include <string>
+
+using namespace std;
 
 int main()
 {
-    std::cout<<"hello mix";
+    char buffer[1024];
+    gets(buffer);
+    cout << buffer;
+
+    return 0;
 }

@@ -1,66 +1,112 @@
-//
-// Created by yuanh on 2021/5/7.
-//
-#include <sys/socket.h>
-#include <error.h>
-#include <errno.h>
-#include <err.h>
-#include <netinet/in.h>
-#include <cstdio>
-#include <cstdlib>
+#include <stdio.h>
+#include <string.h>
 #include <unistd.h>
-#include <cctype>
+#include <stdlib.h>
+#include <netdb.h>
+#include <iostream>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
 
-#define SERV_PORT 8888
-#define BUFFSIZE 1024
-void sys_err(const char *str)
+using namespace std;
+
+int main(int argc, char *argv[])
 {
-    perror(str);
-    exit(1);
-}
+    if (argc != 2)
+    {
+        printf("Using:./server port\nExample:./server 5005\n\n");
+        return -1;
+    }
 
-int main()
-{
-    int ret;
-    char buf[BUFFSIZE];
-    struct sockaddr_in serv_addr, client_addr;
-    socklen_t client_addr_len;
-    serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(SERV_PORT);
-    serv_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    int lfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (lfd==-1)
+    // 第1步：创建服务端的socket。
+    int listenfd;
+    if ((listenfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
-        sys_err("socket error");
+        perror("socket");
+        return -1;
     }
-    int bind_fd = bind(lfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
-    if (bind_fd==-1)
-    {
-        sys_err("bind error");
-    }
-    listen(lfd, 128);
 
-    client_addr_len = sizeof(client_addr);
-    int cfd = accept(lfd, (struct sockaddr *)&client_addr, &client_addr_len);
-    if (cfd==-1)
+    // 第2步：把服务端用于通信的地址和端口绑定到socket上。
+    struct sockaddr_in servaddr;    // 服务端地址信息的数据结构。
+    memset(&servaddr, 0, sizeof(servaddr));
+    servaddr.sin_family = AF_INET;  // 协议族，在socket编程中只能是AF_INET。
+    servaddr.sin_addr.s_addr = htonl(INADDR_ANY);          // 任意ip地址。
+    //servaddr.sin_addr.s_addr = inet_addr("192.168.190.134"); // 指定ip地址。
+    servaddr.sin_port = htons(atoi(argv[1]));  // 指定通信端口。
+    if (bind(listenfd, (struct sockaddr *) &servaddr, sizeof(servaddr)) != 0)
     {
-        sys_err("accept error");
+        perror("bind");
+        close(listenfd);
+        return -1;
     }
+
+    // 第3步：把socket设置为监听模式。
+    if (listen(listenfd, 5) != 0)
+    {
+        perror("listen");
+        close(listenfd);
+        return -1;
+    }
+
+    // 第4步：接受客户端的连接。
+    int clientfd;                  // 客户端的socket。
+    int socklen = sizeof(struct sockaddr_in); // struct sockaddr_in的大小
+    struct sockaddr_in clientaddr;  // 客户端的地址信息。
+//      accept 阻塞，直到有客户端的连接
+    clientfd = accept(listenfd, (struct sockaddr *) &clientaddr, (socklen_t *) &socklen);
+    printf("客户端（%s）已连接。\n", inet_ntoa(clientaddr.sin_addr));
+
+    // 第5步：与客户端通信，接收客户端发过来的报文后，回复ok。
+    char buffer[1024];
+//    while (1)
+//    {
+//        int iret;
+//        memset(buffer, 0, sizeof(buffer));
+//        if ((iret = recv(clientfd, buffer, sizeof(buffer), 0)) <= 0) // 接收客户端的请求报文。
+//        {
+//            printf("iret=%d\n", iret);
+//            break;
+//        }
+//        printf("接收：%s\n", buffer);
+//
+//        strcpy(buffer, "ok");
+//        if ((iret = send(clientfd, buffer, strlen(buffer), 0)) <= 0) // 向客户端发送响应结果。
+//        {
+//            perror("send");
+//            break;
+//        }
+//        printf("发送：%s\n", buffer);
+//    }
+
     while (1)
     {
-        ret = read(cfd, buf, sizeof(buf));
-        if (ret==0)
+        int iret;
+        memset(buffer, 0, sizeof(buffer));
+        if ((iret = recv(clientfd, buffer, sizeof(buffer), 0)) <= 0) // 接收客户端的请求报文。
         {
+            printf("iret=%d\n", iret);
             break;
         }
-        write(STDOUT_FILENO, buf, ret);
-        for (int i = 0; i < ret; ++i)
+        printf("接收：%s\n", buffer);
+
+        cout << "请输入要发送给客户端的消息，输入 q 关闭服务端：";
+        cin >> buffer;
+
+        if (buffer[0] == 'q')
         {
-            toupper(buf[i]);
+            printf("关闭客户端！\n");
+            break;
         }
-        write(cfd, buf, ret);
+
+        if ((iret = send(clientfd, buffer, strlen(buffer), 0)) <= 0) // 向客户端发送响应结果。
+        {
+            perror("send");
+            break;
+        }
+        printf("发送：%s\n", buffer);
     }
-    close(lfd);
-    close(cfd);
-    return 0;
+
+    // 第6步：关闭socket，释放资源。
+    close(listenfd);
+    close(clientfd);
 }
