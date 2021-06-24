@@ -12,6 +12,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    setbuf(stdout, NULL);
     if (argc != 2)
     {
         printf("Using:./server port\nExample:./server 5005\n\n");
@@ -58,27 +59,7 @@ int main(int argc, char *argv[])
 
     // 第5步：与客户端通信，接收客户端发过来的报文后，回复ok。
     char buffer[1024];
-//    while (1)
-//    {
-//        int iret;
-//        memset(buffer, 0, sizeof(buffer));
-//        if ((iret = recv(clientfd, buffer, sizeof(buffer), 0)) <= 0) // 接收客户端的请求报文。
-//        {
-//            printf("iret=%d\n", iret);
-//            break;
-//        }
-//        printf("接收：%s\n", buffer);
-//
-//        strcpy(buffer, "ok");
-//        if ((iret = send(clientfd, buffer, strlen(buffer), 0)) <= 0) // 向客户端发送响应结果。
-//        {
-//            perror("send");
-//            break;
-//        }
-//        printf("发送：%s\n", buffer);
-//    }
-
-    while (1)
+    while (true)
     {
         int iret;
         memset(buffer, 0, sizeof(buffer));
@@ -90,7 +71,7 @@ int main(int argc, char *argv[])
         printf("接收：%s\n", buffer);
 
         cout << "请输入要发送给客户端的消息，输入 q 关闭服务端：";
-        cin >> buffer;
+        gets(buffer);
 
         if (buffer[0] == 'q')
         {

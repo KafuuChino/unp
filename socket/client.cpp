@@ -12,6 +12,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+    setbuf(stdout, NULL);
     if (argc != 3)
     {
         printf("Using:./client ip port\nExample:./client 127.0.0.1 5005\n\n");
@@ -49,44 +50,20 @@ int main(int argc, char *argv[])
     char buffer[1024];
 
     // 第3步：与服务端通信，发送一个报文后等待回复，然后再发下一个报文。
-//    for (int ii = 0; ii < 3; ii++)
-//    {
-//        int iret;
-//        memset(buffer, 0, sizeof(buffer));
-//        sprintf(buffer, "这是第%d个超级女生，编号%03d。", ii + 1, ii + 1);
-//        if ((iret = send(sockfd, buffer, strlen(buffer), 0)) <= 0) // 向服务端发送请求报文。
-//        {
-//            perror("send");
-//            break;
-//        }
-//        printf("发送：%s\n", buffer);
-//
-//        memset(buffer, 0, sizeof(buffer));
-//        if ((iret = recv(sockfd, buffer, sizeof(buffer), 0)) <= 0) // 接收服务端的回应报文。
-//        {
-//            printf("iret=%d\n", iret);
-//            break;
-//        }
-//        printf("接收：%s\n", buffer);
-//    }
-
-    while (1)
+    while (true)
     {
         int iret;
         memset(buffer, 0, sizeof(buffer));
         printf("输入要发送给服务器的内容，输入 q 表示结束： ");
-        scanf("%s", buffer);
-        string input;
-        cin >> input;
-        if ((iret = send(sockfd, buffer, strlen(buffer), 0)) <= 0) // 向服务端发送请求报文。
-        {
-            perror("send");
-            break;
-        }
-
+        gets(buffer);
         if (buffer[0] == 'q')
         {
             printf("退出客户端！\n");
+            break;
+        }
+        if ((iret = send(sockfd, buffer, strlen(buffer), 0)) <= 0) // 向服务端发送请求报文。
+        {
+            perror("send");
             break;
         }
 
