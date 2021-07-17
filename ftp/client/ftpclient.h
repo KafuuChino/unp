@@ -37,14 +37,14 @@ void print_reply(int rc);
 
 /**
  * Parse command in cstruct
- */ 
-int ftclient_read_command(char* buf, int size, struct command *cstruct);
+ */
+int ftclient_read_command(char *buf, int size, struct command *cstruct);
 
 
 /**
  * Do get <filename> command 
  */
-int ftclient_get(int data_sock, int sock_control, char* arg);
+int ftclient_get(int data_sock, int sock_control, char *arg);
 
 
 /**

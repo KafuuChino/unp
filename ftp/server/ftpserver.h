@@ -23,8 +23,7 @@
  * control message over control connection
  * Handles case of null or invalid filename
  */
-void ftserve_retr(int sock_control, int sock_data, char* filename);
-
+void ftserve_retr(int sock_control, int sock_data, char *filename);
 
 
 /**
@@ -35,8 +34,6 @@ void ftserve_retr(int sock_control, int sock_data, char* filename);
 int ftserve_list(int sock_data, int sock_control);
 
 
-
-
 /**
  * Open data connection to client 
  * Returns: socket for data connection
@@ -45,16 +42,14 @@ int ftserve_list(int sock_data, int sock_control);
 int ftserve_start_data_conn(int sock_control);
 
 
-
 /**
  * Authenticate a user's credentials
  * Return 1 if authenticated, 0 if not
  */
-int ftserve_check_user(char*user, char*pass);
+int ftserve_check_user(char *user, char *pass);
 
 
-
-/** 
+/**
  * Log in connected client
  */
 int ftserve_login(int sock_control);
@@ -64,11 +59,10 @@ int ftserve_login(int sock_control);
  * Wait for command from client and send response
  * Returns response code
  */
-int ftserve_recv_cmd(int sock_control, char*cmd, char*arg);
+int ftserve_recv_cmd(int sock_control, char *cmd, char *arg);
 
 
-
-/** 
+/**
  * Child process handles connection to client
  */
 void ftserve_process(int sock_control);
