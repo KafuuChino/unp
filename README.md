@@ -4,7 +4,7 @@
 
 [计算机网络基础](docs/计算机网络.md)
 
-## 2 Linux 高性能服务器编程
+## 2 Linux 高性能服务器编程学习
 
 学习了游双的《Linux 高性能服务器编程》一书
 
@@ -18,5 +18,10 @@
 
 一个 ftp 服务器的设计与实现：[代码](ftp/server)，[文档](docs/ftp服务器设计与实现.md)
 
-基于 epoll 的 ftp 服务器的设计与实现：[代码](ftp_epoll/server/server.c)，[文档](docs/基于epoll的ftp服务器设计与实现.md)
+基于 epoll 的 ftp 服务器的设计与实现：[代码](../ftp/server)，[文档](docs/基于epoll的ftp服务器设计与实现.md)
 
+基于 epoll 的并发 http 服务器的设计与实现：代码，文档
+
+# 参考资料
+
+[游双 《Linux 高性能服务器编程》](https://book.douban.com/subject/24722611/)
